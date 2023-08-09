@@ -20,6 +20,8 @@ o2 =  {'Obesity_Type_I': 0,
 with open('std.pkl', 'rb') as file:
     scaler = pickle.load(file)
 
+with open('RandomForest.pkl', 'rb') as file:
+    crop_recommendation_model = pickle.load(file)
 
 with open('lir.pkl', 'rb') as file:
     lir = pickle.load(file)
@@ -68,6 +70,36 @@ def home1() :
 
     return jsonify(d)
 
+def weather_fetch(city_name):
+    api_key = "9d7cde1f6d07ec55650544be1631307e"
+    base_url = "http://api.openweathermap.org/data/2.5/weather?"
+    complete_url = base_url + "appid=" + api_key + "&q=" + city_name
+    response = requests.get(complete_url)
+    x = response.json()
+    if x["cod"] != "404":
+        y = x["main"]
+        temperature = round((y["temp"] - 273.15), 2)
+        humidity = y["humidity"]
+        return temperature, humidity
+    else:
+        return None
+
+@app.route('/crop_predict')
+def home2(){
+    N = 55
+    P = 56
+    K = 57
+    ph = 7.0
+    rainfall = 177
+    state = "Haryana"
+    city = "Hisar"
+    temperature, humidity = weather_fetch(city)
+    data = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
+    my_prediction = crop_recommendation_model.predict(data)
+    final_prediction = my_prediction[0]
+    print("Crop to be Grown : ", final_prediction)
+    return jsonify(final_prediction)
+}
 
 if __name__ == '__main__':
     app.run(debug = True)
