@@ -1,5 +1,9 @@
 import pickle
-
+import numpy as np
+import pandas as pd
+from datetime import datetime
+import requests
+import random
 from flask import Flask, render_template, request, url_for
 
 import numpy as np
@@ -85,7 +89,7 @@ def weather_fetch(city_name):
         return None
 
 @app.route('/crop_predict')
-def home2(){
+def home2():
     N = 55
     P = 56
     K = 57
@@ -99,7 +103,6 @@ def home2(){
     final_prediction = my_prediction[0]
     print("Crop to be Grown : ", final_prediction)
     return jsonify(final_prediction)
-}
 
 if __name__ == '__main__':
     app.run(debug = True)
